@@ -51,6 +51,7 @@ export class View {
 	}
 
 	drawTarget(target: Target) {
+
 		this.ctx.beginPath();
 
 		let radius: number = config.step / 2;
@@ -58,7 +59,7 @@ export class View {
 		this.ctx.arc(
 			target.xCanvas + radius,
 			target.yCanvas + radius,
-			radius,
+			radius - 1,
 			0,
 			Math.PI * 2,
 			false

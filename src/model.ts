@@ -1,4 +1,6 @@
+import { game } from ".";
 import { config } from "./config";
+import { isEqualCells, log } from "./utils";
 let random = require("lodash/fp/random");
 import { View } from "./view";
 
@@ -55,15 +57,40 @@ export class Model {
 	}
 
 	updateSnake() {
-		this.removeHeadCell();
-		this.addHeadCell();
+		//log(this);
+		//debugger;
+		this.updateFootCell();
+
+		//log(this);
+
+		this.updateHeadCell();
+		//log(this);
 	}
 
-	private removeHeadCell() {
-		this.view.clearCell(this.snake.getFootCell());
+	private isHeadTarget(): boolean {
+		let headCell: Cell = this.snake.getHeadCell();
+
+		if (isEqualCells(headCell, this.target)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	private addHeadCell() {
+	private updateFootCell() {
+		if (!this.isHeadTarget()) {
+			this.removeFootCell();
+		}
+	}
+
+	private removeFootCell() {
+		let footCell: Cell = this.snake.getFootCell();
+
+		this.board.addFreeCell(footCell);
+		this.view.clearCell(footCell);
+	}
+
+	private updateHeadCell() {
 		let headCell = this.snake.getHeadCell();
 		let newHead: Cell;
 
@@ -93,10 +120,25 @@ export class Model {
 				);
 				break;
 		}
-
 		this.snake.cells.push(newHead);
 
+		if (this.snake.isHeadConflict()) {
+			game.restart();
+		}
+
+		if (this.isHeadTarget()) {
+			this.setNewTarget();
+		}
+
+		this.board.removeFreeCell(newHead);
 		this.view.drawSnakeCell(newHead);
+	}
+
+	private setNewTarget() {
+		debugger;
+		this.target = new Target(this.board);
+
+		this.view.drawTarget(this.target);
 	}
 }
 
@@ -137,6 +179,20 @@ export class Board {
 		}
 	}
 
+	removeFreeCell(cell: Cell) {
+		this.freeCells = this.freeCells.filter((item: Cell) => {
+			if (isEqualCells(item, cell)) {
+				return false;
+			} else {
+				return true;
+			}
+		});
+	}
+
+	addFreeCell(cell: Cell) {
+		this.freeCells.push(cell);
+	}
+
 	getFreeCell() {
 		let randIndex: number = random(0, this.freeCells.length - 1);
 
@@ -160,6 +216,16 @@ export class Snake {
 
 	getFootCell(): Cell {
 		return this.cells.shift();
+	}
+
+	isHeadConflict(): boolean {
+		let headCell = this.getHeadCell();
+
+		if (this.cells.indexOf(headCell) === this.cells.length - 1) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
 

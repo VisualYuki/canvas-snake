@@ -1,7 +1,6 @@
 import { Controller } from "./controller";
 //import { View } from "./view";
 
-
 class Game {
 	//view: View;
 	//model: Model;
@@ -24,7 +23,7 @@ class Game {
 	}
 }
 
-let game: Game = new Game();
+export let game: Game = new Game();
 
 //ctx.moveTo(0, 0);
 //ctx.lineTo(0, 600);

@@ -1,6 +1,5 @@
 import { Direction } from "./model";
 import { Model } from "./model";
-import { View } from "./view";
 import { config } from "./config";
 
 export class Controller {
